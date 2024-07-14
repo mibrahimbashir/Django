@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+	.room-container {
+		display: grid;
+		grid-template-columns: 3fr 1fr;
+	}
+</style>
+
+<p>Welcome to the {{room.name}} Discord Page</p>
+
+<div class="room-container">
+	<div class="conversation">
+		<h3>Conversation</h3>
+
+		{% for message in room_messages %}
+			<small>@{{message.user}} - {{message.created|timesince}} ago</small>
+			<p>{{message.body}}</p>
+			{% if request.user == message.user %}
+				<p>
+					<a href="{% url 'delete-message' message.id %}">Delete Message</a>
+				</p>
+			{% endif %}
+			<hr>
+		{% endfor %}
+
+		{% if request.user.is_authenticated %}
+		<form action="" method="POST">
+			{% csrf_token %}
+			<textarea name="body" placeholder="Write your message..."></textarea><br>
+			<input type="submit" value="Submit">
+		</form>
+		{% endif %}
+	</div>
+	<div>
+		<h3>Participants</h3>
+		{% for participant in participants %}
+			<p>@{{participant}}</p>
+		{% endfor %}
+	</div>
+</div>
+{% endblock content %}
