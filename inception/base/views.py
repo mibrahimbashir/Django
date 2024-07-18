@@ -14,6 +14,8 @@ def home(request):
 	q = request.GET.get('q') if request.GET.get('q') != None else ''
 	
 	topics = Topic.objects.all()
+	room_messages = Messages.objects.filter(Q(room__topic__name__icontains=q))
+
 	rooms = Room.objects.filter(
 		Q(topic__name__icontains = q) |
 		Q(name__icontains = q) |
@@ -22,7 +24,7 @@ def home(request):
 
 	room_count = rooms.count()
 
-	context = {'rooms' : rooms, 'topics' : topics, 'room_count' : room_count}
+	context = {'rooms' : rooms, 'topics' : topics, 'room_count' : room_count, 'room_messages': room_messages}
 	return render(request, 'base/home.html', context)
 
 def room(request, pk):
@@ -33,7 +35,7 @@ def room(request, pk):
 	if request.method == 'POST':
 		body = request.POST.get('body')
 		
-		message = Messages.objects.create(
+		message = Messages.objects.create (
 			user=request.user,
 			room=room,
 			body=body
@@ -44,6 +46,17 @@ def room(request, pk):
 	
 	context = {'room' : room, 'room_messages' : room_messages, 'participants' : participants}
 	return render(request, 'base/room.html', context)
+
+def user_profile(request, pk):
+	user = User.objects.get(id=pk)
+	room_messages = user.messages_set.all()
+	topics = Topic.objects.all()
+	rooms = user.room_set.all()
+	room_count = rooms.count()
+
+	context = {'room_messages' : room_messages, 'topics' : topics, 'rooms' : rooms, 'room_count' : room_count}
+
+	return render(request, 'base/profile.html', context)
 
 @login_required(login_url='login')
 def create_room(request):
