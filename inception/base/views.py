@@ -112,7 +112,7 @@ def login_page(request):
 			user = User.objects.get(username=username)
 		except:
 			messages.error(request, "Username does not exist.")
-			return redirect('login-register')
+			return redirect('login')
 
 		user = authenticate(request, username=username, password=password)
 

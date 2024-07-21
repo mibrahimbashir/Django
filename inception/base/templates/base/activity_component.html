@@ -4,7 +4,7 @@
 	<div>
 		<small>
 			<a href="{% url 'user-profile' message.user.id %}">@{{message.user}}</a>
-			{{message.created|timesince}}
+			{{message.created|timesince}} ago
 		</small>
 		<p>
 			<small>replied to {{message.room}}</small>
