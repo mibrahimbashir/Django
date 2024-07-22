@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+	<style>
+		.home-grid {
+			display: grid;
+			grid-template-columns: 1fr 3fr 1fr;
+			column-gap: 20px;
+		}
+	</style>
+
+	<div>
+		<h3>Home Template</h3>
+		<a href="{% url 'create-room' %}">
+			Create Room
+		</a>
+		<hr>
+	</div>
+	
+	<div class="home-grid">
+		<div>
+			{% include 'base/topics_component.html' %}
+		</div>
+
+		<div>
+			{% include 'base/feed_component.html' %}
+		</div>
+
+		<div>
+			{% include 'base/activity_component.html' %}
+		</div>
+
+	</div>
+
+{% endblock content %}
