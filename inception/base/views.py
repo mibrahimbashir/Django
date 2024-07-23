@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 from .models import Room, Topic, Messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -68,13 +68,13 @@ def create_room(request):
 		topic_name = request.POST.get('topic')
 		topic, created = Topic.objects.get_or_create(name=topic_name)
 
-		Room.objects.create(
+		room = Room.objects.create(
 			host=request.user,
 			topic=topic,
 			description=request.POST.get('description'),
 			name=request.POST.get('name')
 		)
-		# room.participants = request.user
+		room.participants.add(request.user)
 		return redirect('home')
 
 	context = {'form' : form, 'topics' : topics}
@@ -162,6 +162,20 @@ def register_page(request):
 
 def delete_message(request, pk):
 	message = Messages.objects.get(id=pk)
-
+	room_id = message.room.id
 	message.delete()
-	return redirect('home')
+	return redirect('room', pk=room_id)
+
+@login_required(login_url='login')
+def update_user(request):
+	user = request.user
+	form = UserForm(instance=user)
+
+	if request.method == 'POST':
+		form = UserForm(request.POST, instance=user)	
+		if form.is_valid():
+			form.save()
+			return redirect('user-profile', pk=user.id)
+		
+	context = {'form' : form}
+	return render(request, 'base/update-user.html', context)
