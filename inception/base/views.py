@@ -179,3 +179,16 @@ def update_user(request):
 		
 	context = {'form' : form}
 	return render(request, 'base/update-user.html', context)
+
+def topics_page(request):
+	q = request.GET.get('q') if request.GET.get('q')  != None else ''
+	topics = Topic.objects.filter(name__icontains=q)
+	context = {'topics' : topics}
+
+	return render(request, 'base/topics.html', context)
+
+def activity_page(request):
+	room_messages = Messages.objects.all()
+	context = {'room_messages' : room_messages}
+
+	return render(request, 'base/activity.html', context)
